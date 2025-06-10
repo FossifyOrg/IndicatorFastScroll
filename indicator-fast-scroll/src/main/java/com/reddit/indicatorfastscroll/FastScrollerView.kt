@@ -353,14 +353,22 @@ class FastScrollerView @JvmOverloads constructor(
                     }
                     is TextView -> {
                         @Suppress("UNCHECKED_CAST")
-                        val possibleTouchedIndicators = view.tag as List<FastScrollItemIndicator.Text>
+                        val possibleTouchedIndicators = view.tag as List<FastScrollItemIndicator.Text>                        
+                        if (possibleTouchedIndicators.isEmpty() || heightForCalculations == 0) {
+                            return false
+                        }
+                        
                         val textIndicatorsTouchY = touchY - view.top
 
                         val textLineHeight = heightForCalculations / possibleTouchedIndicators.size
-                        val touchedIndicatorIndex = min(
-                            textIndicatorsTouchY / textLineHeight,
-                            possibleTouchedIndicators.lastIndex
-                        )
+                        val touchedIndicatorIndex = if (textLineHeight > 0) {
+                            min(
+                                textIndicatorsTouchY / textLineHeight,
+                                possibleTouchedIndicators.lastIndex
+                            )
+                        } else {
+                            0
+                        }
 
                         val touchedIndicator = possibleTouchedIndicators[touchedIndicatorIndex]
                         val centerY = view.y.toInt() + (textLineHeight / 2) + (touchedIndicatorIndex * textLineHeight)
